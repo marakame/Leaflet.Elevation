@@ -11,7 +11,7 @@ L.Control.Elevation = L.Control.extend({
             left: 60
         },
         useHeightIndicator: true,
-        interpolation: "linear",
+        interpolation: d3.curveLinear,
         hoverNumber: {
             decimalsX: 3,
             decimalsY: 0,
@@ -45,14 +45,14 @@ L.Control.Elevation = L.Control.extend({
         opts.yTicks = opts.yTicks || Math.round(this._height() / 30);
         opts.hoverNumber.formatter = opts.hoverNumber.formatter || this._formatter;
 
-        var x = this._x = d3.scale.linear()
+        var x = this._x = d3.scaleLinear()
             .range([0, this._width()]);
 
-        var y = this._y = d3.scale.linear()
+        var y = this._y = d3.scaleLinear()
             .range([this._height(), 0]);
 
-        var area = this._area = d3.svg.area()
-            .interpolate(opts.interpolation)
+        var area = this._area = d3.area()
+            .curve(opts.interpolation)
             .x(function(d) {
                 var xDiagCoord = x(d.dist);
                 d.xDiagCoord = xDiagCoord;
@@ -77,7 +77,7 @@ L.Control.Elevation = L.Control.extend({
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        var line = d3.svg.line();
+        var line = d3.line();
         line = line
             .x(function(d) {
                 return d3.mouse(svg.select("g"))[0];
@@ -365,10 +365,8 @@ L.Control.Elevation = L.Control.extend({
 
         if (opts.imperial) {
             y.attr("class", "y axis")
-                .call(d3.svg.axis()
-                    .scale(this._y)
-                    .ticks(this.options.yTicks)
-                    .orient("left"))
+                .call(d3.axisLeft(this._y)
+                    .ticks(this.options.yTicks))
                 .append("text")
                 .attr("x", -37)
                 .attr("y", 3)
@@ -376,10 +374,8 @@ L.Control.Elevation = L.Control.extend({
                 .text("ft");
         } else {
             y.attr("class", "y axis")
-                .call(d3.svg.axis()
-                    .scale(this._y)
-                    .ticks(this.options.yTicks)
-                    .orient("left"))
+                .call(d3.axisLeft(this._y)
+                    .ticks(this.options.yTicks))
                 .append("text")
                 .attr("x", -45)
                 .attr("y", 3)
@@ -394,10 +390,8 @@ L.Control.Elevation = L.Control.extend({
         if (opts.imperial) {
             x.attr("class", "x axis")
                 .attr("transform", "translate(0," + this._height() + ")")
-                .call(d3.svg.axis()
-                    .scale(this._x)
-                    .ticks(this.options.xTicks)
-                    .orient("bottom"))
+                .call(d3.axisBottom(this._x)
+                    .ticks(this.options.xTicks))
                 .append("text")
                 .attr("x", this._width() + 10)
                 .attr("y", 15)
@@ -406,10 +400,8 @@ L.Control.Elevation = L.Control.extend({
         } else {
             x.attr("class", "x axis")
                 .attr("transform", "translate(0," + this._height() + ")")
-                .call(d3.svg.axis()
-                    .scale(this._x)
-                    .ticks(this.options.xTicks)
-                    .orient("bottom"))
+                .call(d3.axisBottom(this._x)
+                    .ticks(this.options.xTicks))
                 .append("text")
                 .attr("x", this._width() + 20)
                 .attr("y", 15)
